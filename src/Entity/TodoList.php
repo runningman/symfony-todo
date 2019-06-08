@@ -7,11 +7,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use JsonSerializable;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\TodoListRepository")
  */
-class TodoList
+class TodoList implements JsonSerializable
 {
     use UuidTrait;
     use TimestampableEntity;
@@ -37,6 +38,10 @@ class TodoList
     {
         $this->uuid = $this->generateUuid();
         $this->tasks = new ArrayCollection();
+
+        // TODO: why isn't this picked up by trait, issue with form validation.
+        $this->createdAt = new \DateTime();
+        $this->updatedAt = new \DateTime();
     }
 
     public function getId(): ?int
@@ -72,5 +77,15 @@ class TodoList
         }
 
         return $this;
+    }
+
+    /**
+     * Return all tasks for json serialization.
+     *
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return $this->getTasks()->toArray();
     }
 }

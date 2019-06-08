@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello TodoController!{% endblock %}
+
+{% block body %}
+<div class="wrapper">
+    <h1>Create your todo list ✅</h1>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <input type="submit" class="btn" value="Create"/>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

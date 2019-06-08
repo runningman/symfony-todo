@@ -12,4 +12,15 @@ class TodoListRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, TodoList::class);
     }
+
+    /**
+     * Persist the entity in database.
+     *
+     * @param TodoList $todoList
+     */
+    public function save(TodoList $todoList): void
+    {
+        $this->_em->persist($todoList);
+        $this->_em->flush();
+    }
 }

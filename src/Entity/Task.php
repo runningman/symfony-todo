@@ -6,11 +6,12 @@ use App\Entity\Traits\UuidTrait;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use JsonSerializable;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\TaskRepository")
  */
-class Task
+class Task implements JsonSerializable
 {
     use UuidTrait;
     use TimestampableEntity;
@@ -40,6 +41,10 @@ class Task
     public function __construct()
     {
         $this->uuid = $this->generateUuid();
+
+        // TODO: why isn't this picked up by trait, issue with form validation.
+        $this->createdAt = new \DateTime();
+        $this->updatedAt = new \DateTime();
     }
 
     public function getId(): ?int
@@ -86,5 +91,19 @@ class Task
         $this->completedAt = $completedAt;
 
         return $this;
+    }
+
+    /**
+     * Return the data for json serialization.
+     *
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'uid' => $this->getUuid(),
+            'description' => $this->getDescription(),
+            'is_complete' => $this->isComplete(),
+        ];
     }
 }

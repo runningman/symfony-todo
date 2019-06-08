@@ -1,0 +1,93 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ todoList.title }}
+{% endblock %}
+
+{% block body %}
+    <div id="todoList">
+        <h1>{{ todoList.title }}</h1>
+
+        {% verbatim %}
+        <div class="tasks">
+            <ul>
+                <li v-for="task in tasks">
+                    <label>
+                        <input type="checkbox" :checked="task.is_complete" v-on:change="updateTask(task, $event)">
+                        {{ task.description }}
+                    </label>
+                </li>
+            </ul>
+        </div>
+        <div class="new-task">
+            <input type="text" v-model="description">
+            <input type="button" value="Add task" v-on:click="addTask">
+        </div>
+        <div class="stats" v-if="this.tasks.length > 0">
+          <div v-if="this.completedTasks > 0">
+            {{ this.completedTasks }} completed
+          </div>
+          <div v-if="this.todoTasks > 0">
+            {{ this.todoTasks }} remaining
+          </div>
+        </div>
+        {% endverbatim %}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    var app = new Vue({
+        el: '#todoList',
+        data: {
+            tasks: [],
+            description: '',
+            tasksUrl: '{{ tasksUrl }}',
+            addUrl: '{{ addUrl }}',
+        },
+
+        methods: {
+            addTask: function () {
+                let payload = {description: this.description};
+
+                axios.post(this.addUrl, payload).then((response) => {
+                    console.log(response.data);
+                    this.tasks.push(response.data);
+                    this.description = '';
+                }).catch(() => {
+                    alert('Failed to add the task');
+                });
+            },
+
+            updateTask: function (task, event) {
+                task.is_complete = event.target.checked;
+
+                let updateUrl = this.addUrl + '/' + task.uuid;
+                let payload = {is_complete: task.is_complete};
+
+                axios.post(updateUrl, payload).catch(() => {
+                    alert('Failed to update task');
+                });
+            }
+        },
+
+        // Load all the tasks for the list.
+        mounted() {
+            axios.get(this.tasksUrl).then((response) => {
+                this.tasks = response.data;
+            }).catch(() => {
+                alert('Failed to load tasks');
+            });
+        },
+
+        computed: {
+            completedTasks: function () {
+                return this.tasks.filter((task) => { return task.is_complete; }).length;
+            },
+            todoTasks: function () {
+                return this.tasks.filter((task) => { return !task.is_complete; }).length;
+            }
+        }
+    })
+</script>
+{% endblock %}
