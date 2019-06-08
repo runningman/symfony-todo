@@ -1,0 +1,5 @@
+App\Entity\Task:
+  task_{1..40}:
+    todoList: '@todolist_*'
+    description: <text(80)>
+    completed_at: 40%? <dateTimeThisYear()>
