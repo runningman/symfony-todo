@@ -11,7 +11,6 @@ use DateTime;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class TaskController extends ApiController
@@ -48,16 +47,13 @@ class TaskController extends ApiController
 
         $form = $this->getForm($request, TaskType::class, $task);
 
-        if ($form->isValid()) {
-            $this->taskRepository->save($task);
-
-            return new JsonResponse($task);
+        if (!$form->isValid()) {
+            return $this->errorResponse($form);
         }
 
-        return new JsonResponse(
-            $this->getFormErrors($form),
-            Response::HTTP_UNPROCESSABLE_ENTITY
-        );
+        $this->taskRepository->save($task);
+
+        return new JsonResponse($task);
     }
 
     /**
@@ -70,17 +66,14 @@ class TaskController extends ApiController
     {
         $form = $this->getForm($request, CompleteTaskType::class);
 
-        if ($form->isValid()) {
-            $isComplete = $form->get('is_complete')->getData();
-            $task->setCompletedAt($isComplete ? new DateTime() : null);
-            $this->taskRepository->save($task);
-
-            return new JsonResponse($task);
+        if (!$form->isValid()) {
+            return $this->errorResponse($form);
         }
 
-        return new JsonResponse(
-            $this->getFormErrors($form),
-            Response::HTTP_UNPROCESSABLE_ENTITY
-        );
+        $isComplete = $form->get('is_complete')->getData();
+        $task->setCompletedAt($isComplete ? new DateTime() : null);
+        $this->taskRepository->save($task);
+
+        return new JsonResponse($task);
     }
 }

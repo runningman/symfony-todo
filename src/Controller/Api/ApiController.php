@@ -5,7 +5,9 @@ namespace App\Controller\Api;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 abstract class ApiController extends AbstractController
 {
@@ -25,7 +27,23 @@ abstract class ApiController extends AbstractController
         ])->submit($request->request->all());
     }
 
+
     /**
+     * Return a 422 error with the form errors.
+     *
+     * @param Form $form
+     *
+     * @return JsonResponse
+     */
+    protected function errorResponse(Form $form): JsonResponse
+    {
+        return new JsonResponse(
+            $this->getFormErrors($form),
+            Response::HTTP_UNPROCESSABLE_ENTITY
+        );
+    }
+
+        /**
      * Return array of form errors.
      *
      * @param Form $form
