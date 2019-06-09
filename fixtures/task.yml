@@ -1,4 +1,14 @@
 App\Entity\Task:
+  # First list always has two tasks.
+  incomplete_task:
+    todoList: '@test_todolist'
+    description: Incomplete task
+    completed_at: null
+  complete_task:
+    todoList: '@test_todolist'
+    description: Complete task
+    completed_at: <dateTimeThisYear()>
+  # Random tasks for all lists.
   task_{1..40}:
     todoList: '@todolist_*'
     description: <text(80)>

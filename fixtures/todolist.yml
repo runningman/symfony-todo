@@ -1,3 +1,9 @@
 App\Entity\TodoList:
+  test_todolist:
+    title: Test todo list
+    uuid: 12345678-1234-1234-1234-123456781234
+  empty_todolist:
+    title: Empty todo list
+    uuid: 00000000-1234-1234-1234-123456781234
   todolist_{1..5}:
     title: <text(30)>

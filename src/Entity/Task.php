@@ -7,6 +7,7 @@ use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use JsonSerializable;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\TaskRepository")
@@ -25,6 +26,7 @@ class Task implements JsonSerializable
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\NotBlank()
      */
     private $description;
 
@@ -101,7 +103,7 @@ class Task implements JsonSerializable
     public function jsonSerialize(): array
     {
         return [
-            'uid' => $this->getUuid(),
+            'uuid' => $this->getUuid(),
             'description' => $this->getDescription(),
             'is_complete' => $this->isComplete(),
         ];

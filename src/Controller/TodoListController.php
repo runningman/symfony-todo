@@ -2,9 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Task;
 use App\Entity\TodoList;
-use App\Form\TaskType;
 use App\Form\TodoListType;
 use App\Repository\TodoListRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -50,7 +48,7 @@ class TodoListController extends AbstractController
     /**
      * View a to do list.
      *
-     * @Route("/{uuid}", name="todoList.view", methods={"GET"})
+     * @Route("/{uuid}", name="todoList.view")
      */
     public function view(TodoList $todoList)
     {
