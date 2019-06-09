@@ -2,10 +2,10 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableTrait;
 use App\Entity\Traits\UuidTrait;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
 use JsonSerializable;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Task implements JsonSerializable
 {
     use UuidTrait;
-    use TimestampableEntity;
+    use TimestampableTrait;
 
     /**
      * @ORM\Id()
@@ -43,10 +43,6 @@ class Task implements JsonSerializable
     public function __construct()
     {
         $this->uuid = $this->generateUuid();
-
-        // TODO: why isn't this picked up by trait, issue with form validation.
-        $this->createdAt = new \DateTime();
-        $this->updatedAt = new \DateTime();
     }
 
     public function getId(): ?int
