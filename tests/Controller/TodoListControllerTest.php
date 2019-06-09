@@ -25,7 +25,7 @@ class TodoListControllerTest extends TestCase
         $crawler = $this->client->request('GET', '/');
 
         $this->assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
-        $this->assertSame('Create your todo list ✅', $crawler->filter('h1')->text());
+        $this->assertSame('Create your todo list ✔', $crawler->filter('h1')->text());
     }
 
     /**

@@ -1,14 +1,27 @@
 {% extends 'base.html.twig' %}
+{% form_theme form 'bootstrap_3_layout.html.twig' %}
 
-{% block title %}Hello TodoController!{% endblock %}
 
 {% block body %}
-<div class="wrapper">
-    <h1>Create your todo list ✅</h1>
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
+        <h1>Create your todo list ✔</h1>
 
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <input type="submit" class="btn" value="Create"/>
-    {{ form_end(form) }}
+        <hr>
+
+        {{ form_start(form) }}
+
+            {{ form_errors(form.title) }}
+
+
+            <div class="new-todo input-group">
+                {{ form_widget(form.title, {'attr': {'placeholder': 'Name your todo list'} }) }}
+
+                <span class="input-group-btn">
+                    <input type="submit" class="btn btn-primary" value="Create">
+                </span>
+            </div>
+        {{ form_end(form) }}
+    </div>
 </div>
 {% endblock %}
