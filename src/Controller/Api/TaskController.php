@@ -6,8 +6,7 @@ use App\Entity\Task;
 use App\Entity\TodoList;
 use App\Form\CompleteTaskType;
 use App\Form\TaskType;
-use App\Repository\TaskRepository;
-use DateTime;
+use App\Services\TodoService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,13 +15,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class TaskController extends ApiController
 {
     /**
-     * @var TaskRepository
+     * @var TodoService
      */
-    private $taskRepository;
+    private $todoService;
 
-    public function __construct(TaskRepository $taskRepository)
+    public function __construct(TodoService $todoService)
     {
-        $this->taskRepository = $taskRepository;
+        $this->todoService = $todoService;
     }
 
     /**
@@ -42,8 +41,7 @@ class TaskController extends ApiController
      */
     public function addTask(Request $request, TodoList $todoList): JsonResponse
     {
-        $task = new Task();
-        $task->setTodoList($todoList);
+        $task = $this->todoService->createNewTaskInTodoList($todoList);
 
         $form = $this->getForm($request, TaskType::class, $task);
 
@@ -51,7 +49,7 @@ class TaskController extends ApiController
             return $this->errorResponse($form);
         }
 
-        $this->taskRepository->save($task);
+        $this->todoService->saveTask($task);
 
         return new JsonResponse($task);
     }
@@ -70,9 +68,7 @@ class TaskController extends ApiController
             return $this->errorResponse($form);
         }
 
-        $isComplete = $form->get('is_complete')->getData();
-        $task->setCompletedAt($isComplete ? new DateTime() : null);
-        $this->taskRepository->save($task);
+        $task = $this->todoService->toggleTask($task, $form->get('is_complete')->getData());
 
         return new JsonResponse($task);
     }

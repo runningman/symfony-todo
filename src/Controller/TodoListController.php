@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\TodoList;
 use App\Form\TodoListType;
-use App\Repository\TodoListRepository;
+use App\Services\TodoService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,13 +13,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class TodoListController extends AbstractController
 {
     /**
-     * @var TodoListRepository
+     * @var TodoService
      */
-    private $todoListRepository;
+    private $todoService;
 
-    public function __construct(TodoListRepository $todoListRepository)
+    public function __construct(TodoService $todoService)
     {
-        $this->todoListRepository = $todoListRepository;
+        $this->todoService = $todoService;
     }
 
     /**
@@ -31,13 +31,12 @@ class TodoListController extends AbstractController
     {
         $todoList = new TodoList();
 
-        $form = $this->createForm(TodoListType::class, $todoList);
-        $form->handleRequest($request);
+        $form = $this->createForm(TodoListType::class, $todoList)->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->todoListRepository->save($todoList);
+            $this->todoService->saveTodoList($todoList);
 
-            return new RedirectResponse($this->generateUrl('todoList.view', ['uuid' => $todoList->getUuid()]));
+            return new RedirectResponse($this->todoService->getTodoListViewUrl($todoList));
         }
 
         return $this->render('todo/index.html.twig', [
@@ -54,8 +53,8 @@ class TodoListController extends AbstractController
     {
         return $this->render('todo/tasks.html.twig', [
             'todoList' => $todoList,
-            'tasksUrl' => $this->generateUrl('api.tasks', ['uuid' => $todoList->getUuid()]),
-            'addUrl' => $this->generateUrl('api.tasks.add', ['uuid' => $todoList->getUuid()]),
+            'tasksUrl' => $this->todoService->getTodoListTasksUrl($todoList),
+            'addUrl' => $this->todoService->getTodoListTasksAddUrl($todoList),
         ]);
     }
 }

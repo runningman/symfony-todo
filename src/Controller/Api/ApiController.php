@@ -14,8 +14,8 @@ abstract class ApiController extends AbstractController
     /**
      * Create a form and submit the incoming request data.
      *
-     * @param string $formType
-     * @param mixed $entity The entity to use.
+     * @param string  $formType
+     * @param mixed   $entity   the entity to use
      * @param Request $request
      *
      * @return FormInterface
@@ -26,7 +26,6 @@ abstract class ApiController extends AbstractController
             'csrf_protection' => false,
         ])->submit($request->request->all());
     }
-
 
     /**
      * Return a 422 error with the form errors.
@@ -43,7 +42,7 @@ abstract class ApiController extends AbstractController
         );
     }
 
-        /**
+    /**
      * Return array of form errors.
      *
      * @param Form $form
