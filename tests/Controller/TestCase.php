@@ -67,7 +67,7 @@ abstract class TestCase extends WebTestCase
     protected function postJson($url, array $data): array
     {
         $data = json_encode($data);
-        $this->client->request('POST', $url, [], [], [], $data);
+        $this->client->request('POST', $url, [], [], ['CONTENT_TYPE' => 'application/json'], $data);
 
         return $this->getJsonResponse();
     }

@@ -112,7 +112,7 @@ class TaskControllerTest extends TestCase
 
         $this->assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->client->getResponse()->getStatusCode());
 
-        $expectedError = ['failed' => ['description' => ['This value should not be blank.']]];
+        $expectedError = ['description' => ['This value should not be blank.']];
         $this->assertSame($expectedError, $response);
     }
 

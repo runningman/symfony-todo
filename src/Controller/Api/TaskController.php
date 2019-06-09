@@ -9,14 +9,12 @@ use App\Form\TaskType;
 use App\Repository\TaskRepository;
 use DateTime;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class TaskController extends AbstractController
+class TaskController extends ApiController
 {
     /**
      * @var TaskRepository
@@ -45,23 +43,19 @@ class TaskController extends AbstractController
      */
     public function addTask(Request $request, TodoList $todoList): JsonResponse
     {
-        // TODO: better ajax json handling?
-        $data = json_decode($request->getContent(), true);
-
         $task = new Task();
         $task->setTodoList($todoList);
 
-        $form = $this->createForm(TaskType::class, $task);
-        $form->submit($data);
+        $form = $this->getForm($request, TaskType::class, $task);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isValid()) {
             $this->taskRepository->save($task);
 
             return new JsonResponse($task);
         }
 
         return new JsonResponse(
-            ['failed' => $this->getFormErrors($form)],
+            $this->getFormErrors($form),
             Response::HTTP_UNPROCESSABLE_ENTITY
         );
     }
@@ -74,14 +68,9 @@ class TaskController extends AbstractController
      */
     public function updateTask(Request $request, TodoList $todoList, Task $task): JsonResponse
     {
-        // TODO: better ajax json handling?
-        $data = json_decode($request->getContent(), true);
+        $form = $this->getForm($request, CompleteTaskType::class);
 
-        $form = $this->createForm(CompleteTaskType::class, null, [
-            'csrf_protection' => false,
-        ])->submit($data);
-
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isValid()) {
             $isComplete = $form->get('is_complete')->getData();
             $task->setCompletedAt($isComplete ? new DateTime() : null);
             $this->taskRepository->save($task);
@@ -90,27 +79,8 @@ class TaskController extends AbstractController
         }
 
         return new JsonResponse(
-            ['failed' => $this->getFormErrors($form)],
+            $this->getFormErrors($form),
             Response::HTTP_UNPROCESSABLE_ENTITY
         );
-    }
-
-    protected function getFormErrors(Form $form)
-    {
-        $errors = array();
-
-        foreach ($form->getErrors() as $error) {
-            $errors[$form->getName()][] = $error->getMessage();
-        }
-
-        foreach ($form as $child) {
-            if (!$child->isValid()) {
-                foreach ($child->getErrors() as $error) {
-                    $errors[$child->getName()][] = $error->getMessage();
-                }
-            }
-        }
-
-        return $errors;
     }
 }
